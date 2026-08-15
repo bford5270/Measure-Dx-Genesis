@@ -1,0 +1,383 @@
+# Operational Forces Diagnostic Safety Trigger Catalog
+#
+# Machine-readable companion to docs/03-signal-catalog.md
+#
+# STATUS: specification only. No trigger has been executed against live data.
+# All est_volume_per_year and est_yield values are ILLUSTRATIVE PLANNING ESTIMATES
+# for a 10,000-Marine division generating ~30,000 outpatient encounters per year.
+# Replace with measured values from a pilot before use in any resourcing decision.
+#
+# Field semantics:
+#   signal          what fires the trigger
+#   look_back_days  how far back the reviewed episode extends from the firing event
+#   look_fwd_days   forward resolution window (loop-closure triggers only)
+#   sources         data systems required; see docs/08-data-sources.md
+#   exclusions      pre-filters to suppress predictable false positives
+#   posture         review | prospective_remediation | both
+#   priority        mandatory | high | medium | low
+#   needs_access    false = runnable with no new data use agreement
+
+version: 0.1.0
+model_population:
+  marines: 10000
+  encounters_per_year: 30000
+
+tiers:
+
+  # ---------------------------------------------------------------- TIER 1
+  - tier: 1
+    name: Sentinel outcomes
+    posture: review
+    review_rule: 100 percent, mandatory
+    triggers:
+
+      - id: T-01
+        name: Active-duty death with AFMES autopsy
+        signal: Any death of an assigned Marine or Sailor
+        look_back_days: 365
+        sources: [AFMES, MHS_GENESIS, MDR, casualty_reporting]
+        exclusions:
+          - Hostile action death with no relevant preceding medical encounter
+        scope_notes: >
+          Include all non-battle deaths (natural, undetermined, suicide) and trauma or
+          training deaths where a medical condition may have contributed.
+        rationale: >
+          Near-universal autopsy coverage of active-duty deaths is the strongest
+          reference standard for missed diagnosis available in any US health system.
+        est_volume_per_year: [3, 8]
+        priority: mandatory
+        sla_days: 60
+        needs_access: true
+
+      - id: T-02
+        name: Unplanned critical care escalation
+        signal: ICU admission, rapid response activation, or intubation within 30 days of a Role 1 or outpatient encounter
+        look_back_days: 90
+        sources: [MHS_GENESIS, CarePoint, M2]
+        exclusions:
+          - Planned post-operative ICU admission
+        notes: >
+          Escalation from progression of a correctly and timely diagnosed condition is
+          captured as a structured review field, not as a pre-filter.
+        est_volume_per_year: [10, 25]
+        priority: mandatory
+        needs_access: true
+
+      - id: T-03
+        name: Urgent or priority MEDEVAC preceded by a related encounter
+        signal: Urgent/priority evacuation with >=1 encounter for a related complaint in the prior 30 days
+        look_back_days: 90
+        sources: [TRAC2ES, operational_medical_reporting, MHS_GENESIS]
+        est_volume_per_year: [5, 20]
+        priority: mandatory
+        needs_access: true
+        notes: Robust when field documentation is thin; fires on an event documented outside the EHR.
+
+      - id: T-04
+        name: Exertional collapse or arrest
+        signal: Cardiac arrest, exertional collapse, exertional heat stroke, or exertional sickling during PT, PFT/CFT, hike, or field training
+        look_back_days: 180
+        sources: [MHS_GENESIS, NAVSAFECOM_RMI, unit_reporting]
+        review_questions:
+          - Was a prodrome documented and attributed to deconditioning?
+          - Was sickle cell trait status known and acted upon?
+          - Was a cardiac symptom or family history documented and not pursued?
+        est_volume_per_year: [5, 15]
+        priority: mandatory
+        needs_access: false
+        notes: Cross-reference the existing mishap investigation rather than re-collecting.
+
+      - id: T-05
+        name: Emergency surgery within 14 days of an outpatient encounter
+        signal: Emergent operative procedure for a condition plausibly related to a preceding outpatient complaint
+        look_back_days: 90
+        target_procedures:
+          - Appendectomy with perforation
+          - Testicular detorsion or orchiectomy
+          - Fasciotomy for compartment syndrome
+          - Debridement for necrotizing soft tissue infection
+          - Laminectomy or drainage for spinal epidural abscess or cauda equina
+          - Craniotomy
+          - Operative fixation of stress fracture
+          - Salpingectomy for ectopic pregnancy
+        sources: [MHS_GENESIS, M2, MDR]
+        est_volume_per_year: [15, 40]
+        priority: mandatory
+        needs_access: true
+
+  # ---------------------------------------------------------------- TIER 2
+  - tier: 2
+    name: Trajectory and escalation
+    posture: review
+    review_rule: Sample to capacity
+    triggers:
+
+      - id: T-06
+        name: Rule of three
+        signal: "3 or more encounters for the same or related complaint within 30 days,
+          where the third carries a different diagnosis or results in referral,
+          imaging escalation, or admission"
+        look_back_days: 90
+        sources: [MHS_GENESIS, CarePoint]
+        maps_to_safer_dx_item: 11
+        est_volume_per_year: [60, 120]
+        priority: high
+        sample_rate: 0.5
+        needs_access: true
+
+      - id: T-07
+        name: Unplanned hospitalization or ED visit after an outpatient encounter
+        signal: ED visit or admission within 14 days of a BAS, sick call, or MTF primary care encounter for a related complaint
+        look_back_days: 60
+        sources: [MHS_GENESIS, M2, MDR]
+        exclusions:
+          - Scheduled admission
+          - New discrete trauma unrelated to the index complaint
+        est_volume_per_year: [80, 150]
+        priority: high
+        stratify: Admissions before ED visits
+        needs_access: true
+
+      - id: T-08
+        name: Role-of-care escalation within 72 hours
+        signal: Role 1 encounter followed by presentation to Role 2/3 or a civilian ED within 72 hours
+        look_back_days: 30
+        sources: [MHS_GENESIS, M2, operational_medical_reporting]
+        est_volume_per_year: [40, 90]
+        priority: high
+        needs_access: true
+
+      - id: T-09
+        name: Readmission with a different principal diagnosis
+        signal: Readmission within 30 days where the principal diagnosis differs from the index admission
+        look_back_days: 90
+        sources: [MHS_GENESIS, M2]
+        rationale: Diagnostic instability is a stronger signal than readmission alone, which tracks disease severity.
+        est_volume_per_year: [5, 15]
+        priority: high
+        needs_access: true
+
+      - id: T-10
+        name: Nonspecific-to-serious diagnostic transition
+        signal: Index encounter coded to a nonspecific symptom, followed within the dyad window by a coded target serious condition
+        look_back_days: dyad_specific
+        sources: [MHS_GENESIS, MDR, DMSS]
+        implementation: Run dyad-by-dyad per catalog/dyads.yaml. Never as a single query.
+        est_volume_per_year: [100, 250]
+        priority: high
+        needs_access: true
+
+  # ---------------------------------------------------------------- TIER 3
+  - tier: 3
+    name: Disposition and administrative outcomes
+    posture: review
+    review_rule: Sample, interval-prioritized
+    notes: No civilian analog. Converts adjudications the Marine Corps already performs into case-finding.
+    triggers:
+
+      - id: T-11
+        name: New limited duty with a long nonspecific prodrome
+        signal: LIMDU initiated where the first documented encounter for the qualifying condition was >90 days prior and coded nonspecifically
+        look_back_days: 730
+        sources: [e-Profile_LIMDU, MHS_GENESIS, MDR]
+        produces_metric: symptom_to_diagnosis_interval
+        est_volume_per_year: [40, 100]
+        priority: medium_high
+        needs_access: true
+
+      - id: T-12
+        name: Medical board referral
+        signal: Any MEB/PEB referral
+        look_back_days: 1095
+        look_back_rule: To the first documented symptomatic encounter for the unfitting condition
+        sources: [MEB_PEB_systems, MHS_GENESIS, MDR]
+        est_volume_per_year: [50, 120]
+        priority: medium_high
+        sample_by: Longest symptom-to-diagnosis interval first
+        needs_access: true
+
+      - id: T-13
+        name: Condition first identified at PHA or deployment health assessment
+        signal: New significant diagnosis arising from PHA/PDHA/PDHRA with prior symptomatic encounters lacking corresponding workup
+        look_back_days: 730
+        sources: [PHA, DOEHRS, MHS_GENESIS]
+        rationale: Annual PHA is a guaranteed re-contact with 100 percent of the force; no civilian equivalent.
+        est_volume_per_year: [20, 60]
+        priority: medium
+        needs_access: true
+
+      - id: T-14
+        name: Early medical attrition
+        signal: Medical separation, EPTS/EPTE determination, or entry-level separation within 180 days of accession or arrival
+        look_back_days: to_accession_physical
+        sources: [MCTFS, MHS_GENESIS, accession_records]
+        routing: Findings route to accession and recruit training medicine, not to the FMF
+        est_volume_per_year: [15, 50]
+        priority: medium
+        needs_access: true
+
+      - id: T-15
+        name: Deployment-limiting condition found at pre-deployment screening
+        signal: Condition identified at pre-deployment health assessment rendering a Marine non-deployable, with prior symptomatic encounters
+        look_back_days: 545
+        sources: [deployment_health_assessment, MHS_GENESIS]
+        produces_metric: deployability_impact
+        est_volume_per_year: [20, 60]
+        priority: medium
+        needs_access: true
+
+  # ---------------------------------------------------------------- TIER 4
+  - tier: 4
+    name: Loop-closure failures
+    posture: both
+    review_rule: Prospective remediation first; sample for learning
+    notes: The only tier that can prevent harm rather than learn from it.
+    triggers:
+
+      - id: T-16
+        name: Abnormal result without documented follow-up
+        signal: Priority-set result with no documented acknowledgment, notification, follow-up test, or referral
+        look_fwd_days: 14
+        look_fwd_days_low_acuity: 30
+        priority_result_set:
+          - Positive HIV, syphilis, gonorrhea, or chlamydia testing
+          - Hemoglobin < 10 g/dL
+          - WBC > 15000 or < 2000
+          - Platelets < 100000
+          - Positive TB test
+          - Imaging impression recommending further evaluation
+          - Positive urine culture
+          - Elevated troponin
+          - Scrotal ultrasound with a mass
+          - A1c >= 6.5 percent
+        exclusions:
+          - Documented follow-up at an outside facility
+          - Patient refusal
+          - Already under active care for the flagged condition
+        est_volume_per_year: [100, 300]
+        priority: medium
+        posture: prospective_remediation
+        needs_access: true
+
+      - id: T-17
+        name: Referral ordered and not completed
+        signal: Specialty referral with no completed encounter within 60 days
+        look_fwd_days: 60
+        sources: [MHS_GENESIS, M2]
+        review_question: Distinguish structural severance (movement, deployment, PCS) from patient non-adherence
+        est_volume_per_year: [150, 400]
+        priority: medium
+        prioritize: [urology, neurosurgery, oncology, cardiology]
+        needs_access: true
+
+      - id: T-18
+        name: Imaging interpretation discrepancy
+        signal: Material discrepancy between preliminary and final read, or an addendum altering the impression
+        look_back_days: episode
+        sources: [MHS_GENESIS, radiology_QA]
+        notes: Disproportionately relevant where imaging is read by teleradiology remote from the point of care.
+        est_volume_per_year: [20, 60]
+        priority: medium
+        needs_access: true
+
+      - id: T-19
+        name: Test pending at unit movement, deployment, or detachment
+        signal: Ordered test or referral outstanding when the unit deploys or the Marine PCSs/detaches
+        look_fwd_days: 90
+        sources: [MHS_GENESIS, MCTFS, unit_movement_data]
+        novel: true
+        rationale: >
+          Harder boundary than the published "tests pending at discharge" trigger. The
+          Marine physically leaves and the loop has no owner. No published base rate.
+        est_volume_per_year: unknown
+        est_volume_guess: [50, 200]
+        priority: medium_high
+        needs_access: true
+
+      - id: T-20
+        name: Result returned after the ordering provider detached
+        signal: Result returning to a provider who has PCSd, deployed, or separated, with no documented reassignment or acknowledgment
+        sources: [MHS_GENESIS, MCTFS]
+        novel: true
+        rationale: The orphaned-result failure. Silent by construction; nobody is watching the inbox.
+        est_volume_per_year: unknown
+        priority: medium_high
+        posture: prospective_remediation
+        needs_access: true
+
+  # ---------------------------------------------------------------- TIER 5
+  - tier: 5
+    name: Solicited and cross-referred
+    posture: review
+    review_rule: 100 percent
+    notes: >
+      Measure Dx Strategies A, B, C. The published evaluation found staff-referred cases
+      the highest-yield source of all - above every e-trigger. Not a fallback tier.
+    triggers:
+
+      - id: T-21
+        name: Diagnostic Learning Opportunity report
+        signal: Voluntary submission by any medical provider
+        form_fields:
+          - Date
+          - Patient identifier
+          - Initial impression / presenting symptoms
+          - Final diagnosis if known
+          - Brief clinical course
+          - What can we learn (optional)
+        language_rule: Always "diagnostic learning opportunity"; never "diagnostic error"
+        est_volume_per_year: [10, 40]
+        priority: high
+        needs_access: false
+
+      - id: T-22
+        name: Corpsman-initiated concern
+        signal: Report from an HM or IDC that a diagnosis was missed or delayed, or that a raised concern was not acted upon
+        routing: Independent of the provider involved
+        also_solicit: Good catches
+        requires: Written non-retaliation protection
+        novel: true
+        rationale: >
+          The corpsman often has the most longitudinal contact with the Marine and sees
+          the repeat sick call visits before anyone else does.
+        est_volume_per_year: [5, 30]
+        priority: high
+        needs_access: false
+
+      - id: T-23
+        name: External inquiry cross-referral
+        signal: ICE comment, command-directed inquiry, IG complaint, Congressional inquiry, or claim touching medical care
+        est_volume_per_year: [5, 20]
+        priority: low
+        expected_yield: Very low - patient-reported data produced no confirmed learning opportunities in the published evaluation
+        needs_access: false
+
+      - id: T-24
+        name: Mishap and safety investigation cross-referral
+        signal: Naval Safety Command or command safety investigation involving a medical event
+        event_types: [heat casualty, exertional sickling, training death, water event, dive or aviation physiological episode]
+        sources: [NAVSAFECOM_RMI, command_investigations]
+        rationale: >
+          The investigation already exists, is already thorough, and contains detailed
+          medical narrative. Strategy A at zero collection cost.
+        est_volume_per_year: [10, 30]
+        priority: high
+        needs_access: false
+        recommended_as: Pilot opening move - produces reviewable cases before any data use agreement
+
+# --------------------------------------------------------------------------
+governance:
+  retirement_rule:
+    condition: MOD yield < 0.10 after 40 adjudicated cases
+    action: Re-tune once, then retire and publish the retirement
+  control_arm:
+    method: Random sample, same instrument, same panel
+    volume_per_quarter: [25, 40]
+    purpose:
+      - Estimate the base rate for PPV-lift denominators
+      - Defend against the claim that triggers only re-find known events
+      - Detect failure classes the catalog is blind to
+  steady_state_target:
+    adjudicated_cases_per_year: 200
+    reviewer_hours_per_case: [2, 4]
+    clinician_fte: 0.3

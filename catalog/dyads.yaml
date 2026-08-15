@@ -1,0 +1,273 @@
+# Symptom-Disease Dyad Catalog for the USMC Risk Set
+#
+# Machine-readable companion to docs/04-spade-dyads.md
+# Operational engine behind trigger T-10.
+#
+# STATUS: specification only. Nothing here has been run against data.
+#
+# ICD-10 codes are REPRESENTATIVE ANCHORS, NOT VALIDATED VALUE SETS.
+# Several target-side codes were confirmed against the current code set during drafting.
+# The symptom side is the harder half and MUST be built from observed local coding
+# patterns - pull the actual distribution of index codes preceding confirmed cases of
+# each target condition over the last 3 years and let that define the value set.
+# A symptom set that misses how corpsmen and GMOs actually code will silently under-fire.
+#
+# window_days = clinically defensible outer bound within which an earlier encounter is
+# considered part of the same diagnostic episode. Reasoned, not empirically optimized.
+# Tune against observed data once running.
+
+version: 0.1.0
+
+tiers:
+
+  # ================================================================= TIER A
+  - tier: A
+    name: Catastrophic or organ-threatening
+    timescale: hours to days
+    priority: highest
+
+    dyads:
+
+      - id: D-A01
+        target: Testicular torsion
+        target_codes: [N44.00, N44.01, N44.02, N44.03, N44.04]
+        symptom_presentation: Abdominal, groin, scrotal or flank pain
+        typical_mislabel: [epididymitis, hernia, muscle strain, gastroenteritis]
+        window_days: 7
+        review_rule: mandatory
+        note: Salvage is time-dependent in hours. Any torsion with a preceding related visit is reviewed.
+        pilot_priority: 1
+
+      - id: D-A02
+        target: Appendicitis with perforation
+        target_codes: [K35.2, K35.20, K35.21, K35.3, K35.30, K35.31, K35.32, K35.33]
+        symptom_presentation: Abdominal pain
+        symptom_codes_anchor: [R10.0, R10.1, R10.3, R10.9]
+        typical_mislabel: [gastroenteritis, constipation, viral syndrome, food poisoning]
+        window_days: 14
+        harm_marker: Perforation. Simple appendicitis is not automatically a missed opportunity.
+
+      - id: D-A03
+        target: Spinal epidural abscess / cauda equina / vertebral osteomyelitis
+        target_codes: [G06.1, G83.4, M46.20, M46.25, M46.26, M46.27, M46.28]
+        symptom_presentation: Back pain
+        symptom_codes_anchor: [M54.50, M54.51, M54.59, M54.9]
+        typical_mislabel: [muscle strain, sciatica, mechanical back pain]
+        window_days: 30
+        review_focus: >
+          Safer Dx item 4 - were documented red flags acted upon (fever, IVDU,
+          progressive neurologic deficit, bladder or bowel change)?
+        pilot_priority: 3
+
+      - id: D-A04
+        target: Acute nontraumatic compartment syndrome
+        target_codes: [M79.A11, M79.A12, M79.A19, M79.A21, M79.A22, M79.A29]
+        symptom_presentation: Extremity pain after exertion
+        typical_mislabel: [shin splints, cramp, chronic exertional compartment syndrome, strain]
+        window_days: 3
+        note: Chronic exertional compartment syndrome is common in this population; acute is the miss.
+
+      - id: D-A05
+        target: Necrotizing soft tissue infection
+        target_codes: [M72.6]
+        symptom_presentation: Cellulitis or abscess
+        symptom_codes_anchor: [L03.11, L03.115, L03.116, L02.41, L02.91]
+        typical_mislabel: [spider bite, boil, simple cellulitis]
+        window_days: 7
+        review_focus: Pain out of proportion to exam findings
+
+      - id: D-A06
+        target: Subarachnoid hemorrhage / meningitis / cerebral venous thrombosis
+        target_codes: [I60.0, I60.9, G00.0, G00.9, G01, G02, G03.0, G03.9, I67.6]
+        symptom_presentation: Headache
+        symptom_codes_anchor: [R51.0, R51.9, G44.209]
+        typical_mislabel: [dehydration, tension headache, migraine]
+        window_days: 14
+
+      - id: D-A07
+        target: Cervical artery dissection with stroke
+        target_codes: [I63.00, I63.9, I65.29, I77.71, I77.75]
+        symptom_presentation: Neck pain after combatives, MVA, or parachute operations
+        typical_mislabel: [cervical strain, whiplash, muscle spasm]
+        window_days: 30
+        note: Specific to the training exposure profile. Not on any civilian dyad list.
+
+      - id: D-A08
+        target: Posterior circulation stroke
+        target_codes: [I63.00, I63.9]
+        symptom_presentation: Dizziness
+        symptom_codes_anchor: [R42, H81.10, H81.399]
+        typical_mislabel: [vertigo, dehydration, inner ear, anxiety]
+        window_days: 30
+        note: Canonical published SPADE dyad. Low absolute incidence at this age, high harm.
+
+      - id: D-A09
+        target: Myocarditis / pulmonary embolism / ACS / spontaneous pneumothorax
+        target_codes: [I40.0, I40.9, I51.4, I26.09, I26.99, I21.9, J93.11, J93.83]
+        symptom_presentation: Chest pain
+        symptom_codes_anchor: [R07.1, R07.2, R07.89, R07.9, M94.0]
+        typical_mislabel: [costochondritis, anxiety, musculoskeletal chest wall pain, GERD]
+        window_days: 30
+        note: Myocarditis is the age-appropriate target and is regularly labeled anxiety.
+        pilot_priority: 4
+
+      - id: D-A10
+        target: Pulmonary embolism / myocarditis
+        target_codes: [I26.09, I26.99, I40.9]
+        symptom_presentation: Dyspnea
+        symptom_codes_anchor: [R06.00, R06.02, R06.09]
+        typical_mislabel: [deconditioning, asthma, anxiety, URI]
+        window_days: 30
+
+      - id: D-A11
+        target: DVT / pulmonary embolism
+        target_codes: [I82.401, I82.402, I82.409, I82.4Y9, I26.09, I26.99]
+        symptom_presentation: Leg pain or swelling after injury, casting, or long transport
+        typical_mislabel: [strain, contusion, cellulitis]
+        window_days: 30
+        note: Strategic airlift and immobilization are unrecognized risk exposures in this population.
+
+      - id: D-A12
+        target: Ectopic pregnancy / ovarian torsion / tubo-ovarian abscess
+        target_codes: [O00.101, O00.102, O00.109, O00.90, N83.511, N83.512, N70.03, N70.93]
+        symptom_presentation: Pelvic or abdominal pain, female Marine
+        symptom_codes_anchor: [R10.2, R10.30, R10.31, R10.32, N94.6]
+        typical_mislabel: [dysmenorrhea, UTI, gastroenteritis, ovarian cyst]
+        window_days: 14
+        process_check: Was a pregnancy test documented? Single high-value binary check.
+
+      - id: D-A13
+        target: Sepsis / meningococcemia / diabetic ketoacidosis
+        target_codes: [A41.9, A41.89, A39.0, A39.2, A39.4, E10.10, E10.11]
+        symptom_presentation: Viral syndrome
+        symptom_codes_anchor: [B34.9, R50.9, K52.9, R11.2]
+        typical_mislabel: [gastroenteritis, influenza-like illness, viral syndrome]
+        window_days: 7
+        note: The Rory Staunton case in the Measure Dx guide is exactly this dyad.
+
+  # ================================================================= TIER B
+  - tier: B
+    name: Function- and career-threatening
+    timescale: weeks to months
+    priority: high
+    primary_output: interval
+    note: >
+      For Tier B the median symptom-to-diagnosis interval across ALL cases in a dyad is
+      the useful output. It is stable, trendable, and does not require adjudicating every
+      case. Most Tier B cases will not be confirmed missed opportunities.
+
+    dyads:
+
+      - id: D-B01
+        target: Femoral neck and other high-risk stress fracture
+        target_codes_anchor: [M84.359A, M84.350A, M84.353A, M84.354A, M84.363A, M84.364A]
+        target_note: M84.3- family; site-specific extensions required
+        symptom_presentation: Hip, groin, or thigh pain
+        typical_mislabel: [muscle strain, hip flexor strain, shin splints, overuse]
+        window_days: 90
+        harm_marker: Displacement requiring operative fixation
+        note: Highest-volume preventable disability in the infantry.
+        pilot_priority: 1
+
+      - id: D-B02
+        target: Testicular cancer
+        target_codes: [C62.00, C62.01, C62.02, C62.10, C62.11, C62.12, C62.90, C62.91, C62.92]
+        symptom_presentation: Scrotal complaint
+        symptom_codes_anchor: [N50.811, N50.812, N50.819, N45.1, N45.4, N43.3]
+        typical_mislabel: [epididymitis, varicocele, hydrocele]
+        window_days: 180
+        note: >
+          Peak incidence is exactly this age and sex. Signature failure is treated
+          epididymitis that did not resolve, without ultrasound.
+        pilot_priority: 2
+
+      - id: D-B03
+        target: Septic arthritis / inflammatory arthropathy
+        target_codes: [M00.9, M00.00, M05.79, M08.00, M45.9, M46.1]
+        symptom_presentation: Joint pain or effusion
+        typical_mislabel: [sprain, overuse, bursitis]
+        window_days: 60
+
+      - id: D-B04
+        target: Leukemia / lymphoma / hypothyroidism / type 1 diabetes / anemia
+        target_codes: [C81.90, C83.30, C91.00, C92.00, E03.9, E10.9, D50.9, D64.9]
+        symptom_presentation: Fatigue
+        symptom_codes_anchor: [R53.81, R53.83, R53.1, G47.00]
+        typical_mislabel: [overtraining, poor sleep hygiene, deconditioning, adjustment reaction]
+        window_days: 180
+        primary_output: interval
+
+      - id: D-B05
+        target: Melanoma
+        target_codes: [C43.9, C43.59, C43.4, C43.70, C43.71]
+        symptom_presentation: Skin lesion
+        typical_mislabel: [mole, wart, benign nevus]
+        window_days: 365
+        note: Occupational UV exposure is extreme and rarely counted as an exposure.
+
+      - id: D-B06
+        target: Exertional sickling / rhabdomyolysis / occult cardiac disease
+        target_codes: [D57.3, M62.82, T67.01XA, T67.02XA, I42.9, I51.9]
+        symptom_presentation: Exertional collapse or heat illness
+        symptom_codes_anchor: [T67.5XXA, T67.9XXA, R55]
+        window_days: 0
+        window_note: Immediate. Feeds T-04.
+        review_question: Was a prodrome documented and dismissed?
+
+      - id: D-B07
+        target: Suicide attempt / psychiatric admission / missed TBI / substance use disorder
+        target_codes: [T14.91XA, F10.20, F12.20, F19.20, S06.0X0A, F32.9, F33.9]
+        symptom_presentation: Behavioral health presentation
+        symptom_codes_anchor: [F43.20, F43.21, F43.22, F43.23, Z71.9]
+        typical_mislabel: [adjustment disorder, stress reaction, malingering]
+        window_days: 90
+        note: Most under-instrumented dyad in military medicine and probably the highest-harm.
+        pilot_priority: 5
+
+      - id: D-B08
+        target: Traumatic brain injury under-recognition
+        target_codes: [S06.0X0A, S06.0X1A, S06.9X0A, F07.81]
+        symptom_presentation: Post-blast or post-concussive somatic complaint
+        typical_mislabel: [headache, fatigue, sleep disturbance, stress]
+        window_days: 90
+        review_question: Was screening performed at all? Under-recognition rather than misdiagnosis.
+
+      - id: D-B09
+        target: Endometriosis
+        target_codes: [N80.00, N80.03, N80.10, N80.50, N80.A0, N80.B0]
+        symptom_presentation: Dysmenorrhea
+        symptom_codes_anchor: [N94.4, N94.5, N94.6, R10.2]
+        typical_mislabel: [normal periods, primary dysmenorrhea]
+        window_days: 365
+        primary_output: interval
+        note: Diagnostic delay here is measured in years across all populations.
+
+      - id: D-B10
+        target: Malaria / dengue / leptospirosis / Q fever
+        target_codes: [B50.9, B51.9, B54, A90, A91, A27.9, A78]
+        symptom_presentation: Fever after deployment or travel
+        symptom_codes_anchor: [R50.9, R50.81]
+        window_days: 30
+        exposure_restriction: REQUIRED - documented deployment or travel exposure
+        warning: Without exposure restriction this dyad is pure noise.
+
+      - id: D-B11
+        target: Decompression sickness / arterial gas embolism
+        target_codes: [T70.3XXA, T70.29XA, T70.9XXA]
+        symptom_presentation: Joint or neurologic complaint after diving or flight
+        typical_mislabel: [strain, fatigue, musculoskeletal pain]
+        window_days: 7
+        exposure_restriction: REQUIRED - dive- or flight-qualified population only
+
+# --------------------------------------------------------------------------
+pilot_set:
+  rationale: >
+    Largest share of preventable harm and preventable duty-day loss in this population,
+    each with an unambiguous target code.
+  dyads: [D-B01, D-B02, D-A01, D-A03, D-A09, D-B07]
+
+analyst_notes:
+  - Build the symptom side from observed data, not from a textbook.
+  - Restrict by exposure where the dyad demands it (D-B10, D-B11).
+  - Expect the interval, not the count, to be the useful output for Tier B.
+  - Tune window_days against observed data once the dyads run.
