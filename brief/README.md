@@ -8,7 +8,7 @@ architecture rather than four projects.
 | 1 | Title | — |
 | 2 | The problem — quality is asserted, not measured | CSC one-pager; Measure Dx `docs/01` |
 | 3 | Four efforts, one architecture | integrating argument |
-| 4 | **EWP (LOE 1)** | **content pending** |
+| 4 | EWP (LOE 1) — Enterprise-Wide Privileging | EWP Context Package (15 Aug 2026); DHA-PM 6025.13 Vol 8; BUMEDNOTE 6000 |
 | 5 | CSC — the PACE × JTS CPG framework | CSC PACE one-pager v2 (09 May 2026) |
 | 6 | CSC — path to HSOAG Oct 2026 | CSC project charter v0.2 |
 | 7 | Simulation (LOE 3) — role2sim | `role2sim` docs/WHITE_PAPER.md rev. 3 |
@@ -25,13 +25,11 @@ npm install pptxgenjs        # once
 node brief/build_hsoag_deck.js
 ```
 
-## Filling in EWP
-
-Everything EWP-specific is in the `EWP` object at the top of
-`build_hsoag_deck.js`. Set `pending: false`, fill in `expansion` and the four
-slots on slide 4, and update the EWP ask on slide 10. No other slide changes.
-
 ## Caveats carried into the deck
+
+- EWP currency: BUMEDNOTE 6000 carries a stated **Nov 2026 cancellation**. The
+  slide-10 ask is built on that. Confirm it has not already been superseded
+  before briefing.
 
 - Simulation figures are pre-SME-face-validity; several parameters remain
   provisional. Slide 7 says so, and the speaker note says it louder.

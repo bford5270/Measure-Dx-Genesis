@@ -2,7 +2,7 @@
  * HSOAG Quality Line of Effort — brief deck.
  *
  * Four efforts, one measurement architecture:
- *   EWP  (LOE 1)  — content pending, see EWP block below
+ *   EWP  (LOE 1)  — Enterprise-Wide Privileging at I MEF, from the EWP context package
  *   CSC  (LOE 2)  — Crisis Standards of Care / PACE, from the Notion project charter
  *   SIM  (LOE 3)  — role2sim Monte Carlo, from docs/WHITE_PAPER.md
  *   MDX           — Measure Dx application to MHS GENESIS, this repository
@@ -40,19 +40,13 @@ const W = 13.333;
 const H = 7.5;
 
 // ---------------------------------------------------------------- content
-// EWP is the one block awaiting source material. Everything referenced as a
-// finding elsewhere in this deck traces to a project document.
+// Every finding in this deck traces to a project document; see brief/README.md.
 const EWP = {
-  pending: true,
   name: "EWP",
-  expansion: "[expansion pending]",
-  oneLiner: "Awaiting project material.",
-  bullets: [
-    "Scope and objective",
-    "Current status and milestones",
-    "What it produces that the other two lines of effort consume",
-    "Decision or endorsement sought at HSOAG",
-  ],
+  expansion: "Enterprise-Wide Privileging",
+  ask:
+    "Advocate the successor instruction to BUMEDNOTE 6000 before its Nov 2026 cancellation, " +
+    "and seek enterprise clarification on supervised privileges at operational platforms.",
 };
 
 const pres = new pptxgen();
@@ -179,7 +173,7 @@ function footer(slide, text) {
     bold: true, lineSpacing: 46, margin: 0,
   });
   s.addText(
-    "Four efforts, one measurement architecture — Early Warning, Crisis Standards of Care, Simulation, and Diagnostic Safety",
+    "Four efforts, one measurement architecture — Enterprise-Wide Privileging, Crisis Standards of Care, Simulation, and Diagnostic Safety",
     {
       x: 0.9, y: 4.25, w: 10.4, h: 0.5,
       fontSize: 14, fontFace: BODY, color: C.lightInk, margin: 0,
@@ -264,10 +258,10 @@ function footer(slide, text) {
   );
 
   const flow = [
-    { t: "EWP", q: "What is coming?", d: "Anticipate", color: C.sage, note: "LOE 1" },
-    { t: "CSC / PACE", q: "What is good, right now?", d: "Define the standard", color: C.primary, note: "LOE 2" },
-    { t: "Simulation", q: "Where does it break?", d: "Test before deploying", color: C.accent, note: "LOE 3" },
-    { t: "Measure Dx", q: "What did we miss?", d: "Detect in the record", color: C.ink, note: "Enabling" },
+    { t: "EWP", q: "Who may practice here, and at what scope?", d: "Authorize the provider", color: C.sage, note: "LOE 1" },
+    { t: "CSC / PACE", q: "What is good care, right now?", d: "Define the standard", color: C.primary, note: "LOE 2" },
+    { t: "Simulation", q: "Where does the configuration break?", d: "Test before deploying", color: C.accent, note: "LOE 3" },
+    { t: "Measure Dx", q: "What did we actually miss?", d: "Detect in the record", color: C.ink, note: "Enabling" },
   ];
 
   const cw = 2.72, gap = 0.42, x0 = 0.62;
@@ -288,11 +282,11 @@ function footer(slide, text) {
       fontSize: 19, fontFace: HEAD, color: C.ink, bold: true, margin: 0,
     });
     s.addText(f.q, {
-      x: x + 0.28, y: 3.78, w: cw - 0.56, h: 0.6,
-      fontSize: 13, fontFace: BODY, color: f.color, bold: true, italic: true, margin: 0,
+      x: x + 0.28, y: 3.78, w: cw - 0.56, h: 0.8,
+      fontSize: 12.5, fontFace: BODY, color: f.color, bold: true, italic: true, margin: 0,
     });
     s.addText(f.d, {
-      x: x + 0.28, y: 4.55, w: cw - 0.56, h: 0.5,
+      x: x + 0.28, y: 4.68, w: cw - 0.56, h: 0.45,
       fontSize: 12, fontFace: BODY, color: C.muted, margin: 0,
     });
     if (i < flow.length - 1) {
@@ -324,40 +318,77 @@ function footer(slide, text) {
 
 // ================================================================ 4. EWP
 {
-  const s = contentSlide("Line of effort 1", `${EWP.name} — ${EWP.expansion}`);
+  const s = contentSlide("Line of effort 1", "Enterprise-Wide Privileging");
 
-  if (EWP.pending) {
-    s.addShape(pres.ShapeType.roundRect, {
-      x: 0.62, y: 1.95, w: 11.9, h: 1.05,
-      fill: { color: "FDF3EE" }, rectRadius: 0.05,
-      line: { color: C.accent, width: 1 },
-    });
-    s.addText(
-      [
-        { text: "CONTENT PENDING.  ", options: { bold: true, color: C.accent } },
-        { text: "This slide is scaffolded against the structure used for the other two lines of effort. Supply the EWP project material and it populates without touching the rest of the deck.", options: { color: C.muted } },
-      ],
-      { x: 1.0, y: 1.95, w: 11.1, h: 1.05, fontSize: 12.5, fontFace: BODY, valign: "middle", margin: 0 }
-    );
-  }
+  s.addText(
+    "Privileges are now MHS privileges — portable across the enterprise without a re-privileging action, held to the top of the provider's training rather than to the gaining facility's scope. The gaining command no longer adjudicates competence; it authorizes practice. For I MEF that means inheriting privileged providers on a five-business-day clock and catching the exceptions before arrival, not after.",
+    { x: 0.62, y: 1.85, w: 7.55, h: 1.28, fontSize: 12.5, fontFace: BODY, color: C.muted, lineSpacing: 18, margin: 0 }
+  );
 
-  const slots = [
-    ["Objective", "What the effort is for, in one sentence a non-medical action officer can repeat."],
-    ["Current state", "Where it stands now — what exists, what is in work, what is blocked."],
-    ["Output", "What it produces that CSC, simulation, or Measure Dx consumes."],
-    ["Ask", "The decision, endorsement, or resourcing sought at HSOAG."],
+  // The clock — the operative constraint for an operational command.
+  const clock = [
+    ["1 calendar day", "Clinician notifies the PA of orders"],
+    ["24 hours", "MSP office reviews the credentials record"],
+    ["5 business days", "Authorization complete — and before arrival"],
+    ["Monthly, NLT 16th", "Data call to the Network lead"],
   ];
-  slots.forEach(([h, b], i) => {
-    const col = i % 2, row = Math.floor(i / 2);
-    card(s, {
-      x: 0.62 + col * 6.15, y: 3.25 + row * 1.72, w: 5.75, h: 1.5,
-      head: h, headSize: 15, body: b, bodySize: 11.5,
-      fill: C.soft,
+  s.addText("THE CLOCK", {
+    x: 0.62, y: 3.3, w: 7.55, h: 0.24,
+    fontSize: 10, fontFace: BODY, color: C.accent, bold: true, charSpacing: 1.4, margin: 0,
+  });
+  clock.forEach(([when, what], i) => {
+    const y = 3.62 + i * 0.46;
+    s.addShape(pres.ShapeType.ellipse, { x: 0.62, y: y + 0.08, w: 0.13, h: 0.13, fill: { color: C.sage } });
+    s.addText(when, {
+      x: 0.92, y, w: 1.92, h: 0.3,
+      fontSize: 11.5, fontFace: BODY, color: C.ink, bold: true, margin: 0,
+    });
+    s.addText(what, {
+      x: 2.92, y, w: 5.25, h: 0.3,
+      fontSize: 11.5, fontFace: BODY, color: C.muted, margin: 0,
     });
   });
 
-  footer(s, "Placeholder structure — replace with EWP project content.");
-  s.addNotes("Awaiting EWP source material. Slide structure mirrors the CSC and simulation slides so the three lines of effort read as parallel.");
+  card(s, {
+    x: 8.42, y: 1.85, w: 4.1, h: 2.28,
+    head: "Two hard stops", headSize: 14, headColor: C.accent,
+    lines: [
+      "Privileges expiring within 90 days — stop EWP, revert to legacy privileging",
+      "Supervised privileges bound for an operational assignment — operational platforms cannot host them",
+    ],
+    bodySize: 10.5, fill: "FDF3EE",
+  });
+
+  card(s, {
+    x: 8.42, y: 4.28, w: 4.1, h: 2.24,
+    head: "I MEF posture", headSize: 14, headColor: C.primary,
+    lines: [
+      "PA is the I MEF Surgeon, delegated from the Medical Officer of the Marine Corps",
+      "MEC is quarterly — not a fast path",
+      "No local bylaws modifying the DHA baseline",
+      "Reserve Component in scope since 27 May 2026",
+    ],
+    bodySize: 10.5, fill: C.soft,
+  });
+
+  // The two forms — what actually moves at a transfer.
+  const forms = [
+    ["DHA Form 456", "Authorization to practice + attestation, signed before arrival. No clinician practices without it; its signature date is the metrics completion marker.", C.primary],
+    ["DHA Form 455", "The Performance Assessment Report. Clinical supervisor completes it on PCS or TDY over two weeks. Supersedes all MILDEP and CCQAS PARs — scaffold it, never author it.", C.accent],
+  ];
+  forms.forEach(([h, b, col], i) => {
+    card(s, {
+      x: 0.62 + i * 3.94, y: 5.38, w: 3.64, h: 1.48,
+      head: h, headSize: 13, headColor: col, body: b, bodySize: 9.5, fill: C.soft,
+    });
+  });
+
+  footer(s, "Source: DHA-PM 6025.13 Vol 8 (21 Oct 2025); BUMEDNOTE 6000 (25 Nov 2025); DHA Form 455 PAR fact sheet. All C&P content is MQA information under 10 U.S.C. §1102 and CUI.");
+  s.addNotes(
+    "The two hard stops are where transfers actually go wrong. Expiring-within-90-days is the most common way a case gets processed down the wrong track. " +
+    "Supervised privileges at an operational platform drives more I MEF adjudication than anything else in the policy — and it is the same substitution question the simulation quantifies. " +
+    "Note also that privilege duration is 3 years with NPDB Continuous Query enrollment and 2 years without, which is what sets the 90-day clock."
+  );
 }
 
 // ================================================================ 5. CSC — the framework
@@ -603,29 +634,30 @@ function footer(slide, text) {
   });
 
   const links = [
-    ["The PACE tier is the shared unit of account", "CSC defines the tiers and their triggers. The simulation reports its outcomes as tier distributions. Both speak the same language to a commander, and both surface in MedCOP via MAVEN."],
-    ["JTS CPGs remain the measuring stick at every level", "Quality improvement does not stop when the standard degrades. The CPG is executable guidance at Primary and a recovery target at Emergency — so there is always something to measure against."],
-    ["Measure Dx supplies the empirical floor", "The simulation predicts where care breaks. Measure Dx observes where it actually broke, with a true denominator no civilian system can compute. One is a hypothesis; the other is evidence."],
+    ["10 U.S.C. §1102 is the common legal substrate", "EWP already handles all credentialing content as protected medical quality assurance information. Measure Dx requires the same charter to function non-punitively. One protection, one handling channel — not four separate conversations with the judge advocate."],
+    ["Scope of utilization is the PACE problem in credentialing language", "EWP privileges a provider to the top of their training, then states plainly that they may exercise only the privileges their current location supports. That gap between credential and capability is exactly what the PACE tiers describe as it widens."],
+    ["The PACE tier is the shared unit of account", "CSC defines the tiers and their triggers; the simulation reports its outcomes as tier distributions. Both speak one language to a commander, and both surface in MedCOP via MAVEN."],
+    ["Peer review is where all four already meet", "EWP needs SMART performance metrics for FPPE and OPPE. Measure Dx produces exactly that class of measure, with a true denominator. The recurring EWP product is already “forms to track peer review” — this supplies the content."],
   ];
   links.forEach(([h, b], i) => {
-    const y = 2.12 + i * 1.55;
-    s.addShape(pres.ShapeType.rect, { x: 0.62, y: y + 0.06, w: 0.07, h: 1.15, fill: { color: PACE[i].color } });
+    const y = 1.98 + i * 1.28;
+    s.addShape(pres.ShapeType.rect, { x: 0.62, y: y + 0.05, w: 0.07, h: 1.0, fill: { color: PACE[i].color } });
     s.addText(h, {
-      x: 0.98, y, w: 11.5, h: 0.42,
-      fontSize: 17, fontFace: HEAD, color: "FFFFFF", bold: true, margin: 0,
+      x: 0.98, y, w: 11.5, h: 0.38,
+      fontSize: 16, fontFace: HEAD, color: "FFFFFF", bold: true, margin: 0,
     });
     s.addText(b, {
-      x: 0.98, y: y + 0.44, w: 11.4, h: 0.78,
-      fontSize: 12.5, fontFace: BODY, color: C.lightInk, lineSpacing: 18, margin: 0,
+      x: 0.98, y: y + 0.4, w: 11.4, h: 0.76,
+      fontSize: 11.5, fontFace: BODY, color: C.lightInk, lineSpacing: 16, margin: 0,
     });
   });
 
-  s.addText(
-    "Take any one away and the others lose a function: an untested standard, an outcome with no definition, or a prediction that is never checked against what happened.",
-    { x: 0.98, y: 6.75, w: 11.4, h: 0.42, fontSize: 12, fontFace: BODY, color: C.sage, italic: true, margin: 0 }
+  s.addNotes(
+    "This is the slide to land if you only get one. Two of these four links were not visible until the lines of effort were put side by side. " +
+    "The 1102 point is the practical one — charter Measure Dx as an MQA activity under the same authority EWP already operates under, and the protection question is answered once. " +
+    "The scope-of-utilization point is the conceptual one: EWP and CSC are describing the same gap between what a provider is credentialed to do and what the location can actually support. " +
+    "Closing thought if asked: take any one away and the others lose a function — an untested standard, an outcome with no definition, or a prediction never checked against what happened."
   );
-
-  s.addNotes("This is the slide to land if you only get one. The portfolio argument is stronger than any individual effort's argument.");
 }
 
 // ================================================================ 10. ASKS
@@ -633,10 +665,10 @@ function footer(slide, text) {
   const s = contentSlide("Decisions requested", "What we need from HSOAG");
 
   const asks = [
+    ["EWP", EWP.ask, C.sage],
     ["CSC", "Confirm whether “accepted / in press” satisfies the citation requirement, and identify the I&L action officer to staff the white paper.", C.primary],
     ["Simulation", "Sponsor an SME face-validity review panel. The model cannot be cited in a decision until it has one.", C.accent],
     ["Measure Dx", "Authorize a 12-month pilot at one division, and name the analytic partner for the data extract.", C.ink],
-    [EWP.name, "[Ask pending EWP material.]", C.sage],
   ];
   asks.forEach(([who, what, col], i) => {
     const y = 1.95 + i * 1.12;
@@ -665,9 +697,4 @@ function footer(slide, text) {
 
 // ---------------------------------------------------------------- write
 const out = path.join(__dirname, "HSOAG_Quality_LOE.pptx");
-pres.writeFile({ fileName: out }).then(() => {
-  console.log(`Wrote ${out}`);
-  if (EWP.pending) {
-    console.log("NOTE: EWP content is still a placeholder (slides 4 and 10).");
-  }
-});
+pres.writeFile({ fileName: out }).then(() => console.log(`Wrote ${out}`));
