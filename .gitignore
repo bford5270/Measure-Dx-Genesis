@@ -14,3 +14,10 @@ extracts/
 !tests/fixtures/*.csv
 mapping.yaml
 .env
+
+# deck build byproducts
+brief/*.pdf
+brief/slide-*.jpg
+node_modules/
+package-lock.json
+package.json
