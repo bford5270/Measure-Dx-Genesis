@@ -32,11 +32,54 @@ that Measure Dx deliberately does not supply.
 | [`docs/08-data-sources.md`](docs/08-data-sources.md) | Where the data actually live and who to partner with |
 | [`docs/09-implementation-roadmap.md`](docs/09-implementation-roadmap.md) | Phased pilot, resourcing, decision gates |
 | [`docs/10-open-questions.md`](docs/10-open-questions.md) | What must be verified before this is briefable as fact |
+| [`docs/11-running-the-code.md`](docs/11-running-the-code.md) | **The tool** — install, run, calibrate, and the compliance gate |
 
 Machine-readable specs for an analyst:
 
 - [`catalog/triggers.yaml`](catalog/triggers.yaml) — trigger definitions
 - [`catalog/dyads.yaml`](catalog/dyads.yaml) — symptom–disease pairs with look-forward windows
+
+---
+
+## The tool
+
+`mdxg` reads a medical record extract and returns a **FIN-keyed worklist of notes
+that may benefit from review**. 15 of the 24 catalog triggers are implemented; the
+rest are solicited report streams rather than queries.
+
+```bash
+pip install -e .
+mdxg demo        # runs on synthetic data — no PHI, no network, no access needed
+```
+
+```
+Encounters scanned: 1,168
+Trigger firings:    16
+Distinct FINs flagged: 12 (1.0% of encounters)
+
+     fin index_date index_dx top_priority  n_triggers   triggers  review_score
+F0001153 2024-07-19    R10.2    mandatory           2 T-05; T-10          11.5
+F0001160 2024-04-30    B34.9    mandatory           2 T-02; T-10          11.5
+F0001162 2024-07-29   R53.83    mandatory           1       T-01          10.0
+```
+
+Against your own extract:
+
+```bash
+mdxg init-mapping mapping.yaml                    # map your columns
+mdxg run --mapping mapping.yaml --data ./extracts --out ./out --control-arm 40
+mdxg packet --fin F0001153 --mapping mapping.yaml --data ./extracts
+mdxg calibrate --dyad D-B01 --mapping mapping.yaml --data ./extracts
+mdxg metrics --adjudications adj.csv --worklist out/review/worklist_detail.csv
+```
+
+**A trigger firing is a question, not a finding.** Adjudication is a clinician
+task using the Revised Safer Dx Instrument. Nothing in the package writes to any
+source system, and nothing in it determines that care was substandard.
+
+Read [`docs/11-running-the-code.md`](docs/11-running-the-code.md) before pointing
+it at real data — the compliance gate there is not optional and is not a code
+problem.
 
 ---
 
