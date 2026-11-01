@@ -39,12 +39,12 @@ practice. Document only the failsafes your systems or staff carry out.
 ## 1. `.CLOSE` : per-problem footer
 
 ```
-A/P [problem] [ACCEPT: {A agenda / C acute / C chronic / E prevention / P person-centered / T transition}]
+A/P [problem] [optional tag, ACCEPT goal: {A agenda / C acute / C chronic / E prevention / P person-centered / T transition}]
 C  [impression]; considered and excluded: [___]
 L  {clinician / patient / specialist / lab / nurse pool / care team} owns [pending result / referral / titration / callback]
 O  [orders]; options considered: [option 1 / option 2]; patient {agrees / declines / defers}{; risks of declining explained: [___]}
 S  return sooner if [named warning signs] within [time frame]
-E  closes when [result] is reviewed, acted on, and communicated {by [date] / when resulted}; failsafe: [task / reminder / outreach] if not closed by [date]
+E  closes when [result] is reviewed, acted on, and communicated {by [date] / when resulted}; failsafe: [task / reminder / outreach] if no result by [date], and [task] if a result is not communicated within [days] of arriving
 ```
 
 ## 2. `.CLOSE1` : stable problem, nothing pending
@@ -65,7 +65,7 @@ Addressed today: [___]
 Not addressed today (on next agenda, not counted toward decision making): [___] -> [booked visit / date]
 
 Item | Owner | Due date or trigger | Failsafe
-[___] | {clinician / patient / specialist / lab / nurse pool} | [date / when resulted] | [task / reminder / outreach]
+[___] | {clinician / patient / specialist / lab / nurse pool} | [date / when resulted]; communicate within [days] | [task / reminder / outreach]
 [___] | {___} | [___] | [___]
 
 Results pending at signing: {none / [___]} -> tracked by {results inbox / nurse pool / [___]}
@@ -76,7 +76,7 @@ Keep the "Results pending at signing" line even when the answer is none.
 
 ## 4. Weighted variants
 
-The 5 lines stay the same; the load-bearing lines shift with the visit.
+The 5 lines stay the same; the load-bearing lines shift with the visit. The ACCEPT tag on each problem is optional and only records which goal the problem came from.
 
 ### `.CLOSEACUTE` : acute problem (S and E carry the weight)
 

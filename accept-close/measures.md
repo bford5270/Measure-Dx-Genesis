@@ -26,8 +26,8 @@ make outcome measures for the CLOSE lines:
 | T-07 | Emergency visit or hospitalization soon after an office visit for a related complaint | S (safety-net) | Yes |
 | T-16 | Abnormal result without documented follow-up | L and E | Yes |
 | T-17 | Referral ordered and not completed | L and E | Yes |
-| T-06 | Third visit within 30 days for the same complaint that ends in a new diagnosis or escalation | C (clinical reasoning) | Yes |
+| T-06 | Third visit within 30 days for the same or a related complaint that ends in a different diagnosis, a referral, imaging, or admission | C (clinical reasoning) | Yes |
 
-The code reads flat-file extracts and has been run only on synthetic data. Before
+The code reads flat-file extracts from military record systems, needs adapting for other EHRs, and has been run only on synthetic data. Before
 pointing it at real records, read [`../docs/11-running-the-code.md`](../docs/11-running-the-code.md).
 A trigger hit is a question for clinician review, not a finding.
