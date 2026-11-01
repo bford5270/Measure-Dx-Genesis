@@ -17,6 +17,16 @@ that Measure Dx deliberately does not supply.
 
 ---
 
+## For FPM readers: ACCEPT and CLOSE
+
+If you arrived from the FPM article on ACCEPT and CLOSE, start in
+[`accept-close/`](accept-close/). It holds the note templates (dot phrases), the
+measures a practice can track, and the 4 trigger queries from this repository that
+apply in any primary care practice. That folder is licensed CC BY 4.0. The rest of the
+repository is the Marine Corps diagnostic safety design described below.
+
+---
+
 ## Start here
 
 | Document | What it covers |
