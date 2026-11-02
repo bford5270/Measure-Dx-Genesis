@@ -1,7 +1,8 @@
 # Measures that show whether ACCEPT and CLOSE is working
 
-Track each measure monthly as a run chart, before and after each change. Note time
-that falls while the balancing measures rise is not a success.
+Track each measure monthly as a run chart, before and after each change. A fall in note
+time accompanied by a rise in the balancing measures suggests that the work has moved to
+someone else rather than been removed.
 
 | Type | Measure | Source |
 |---|---|---|
@@ -30,4 +31,5 @@ make outcome measures for the CLOSE lines:
 
 The code reads flat-file extracts from military record systems, needs adapting for other EHRs, and has been run only on synthetic data. Before
 pointing it at real records, read [`../docs/11-running-the-code.md`](../docs/11-running-the-code.md).
-A trigger hit is a question for clinician review, not a finding.
+A trigger hit identifies a chart for clinician review; it does not by itself show that an
+error occurred.

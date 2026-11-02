@@ -1,6 +1,6 @@
 # ACCEPT and CLOSE: note templates (dot-phrase library)
 
-Version 1.0, November 2026. Companion to the article "ACCEPT and CLOSE: A
+Version 1.1, November 2026. Companion to the article "ACCEPT and CLOSE: A
 Technology-Enabled Framework for the 4 C's of Primary Care and a 7-Minute Note"
 (submitted to FPM).
 
@@ -8,7 +8,7 @@ These are documentation patterns, not clinical advice. Paste them into your EHR'
 text-macro tool (Epic SmartPhrases, Oracle Health auto-text, or the equivalent) and
 adapt the pick lists to your practice. Bracketed fields are left blank on purpose.
 
-**Field conventions:** `[___]` free text or date; `{a / b / c}` pick list, keep one.
+Field conventions: `[___]` free text or date; `{a / b / c}` pick list, keep one.
 
 ## How the 2 checklists fit together
 
@@ -29,8 +29,8 @@ CLOSE names up to 5 lines that end each problem in the assessment and plan:
 
 A stable problem with nothing pending may need only the first line.
 
-**No orphan loops.** Nothing leaves the visit pending without an owner, a due date
-or trigger, and a failsafe the practice controls and will actually run. A patient can
+The design rule that joins the 2 checklists (no orphan loops) is that nothing leaves the
+visit pending without an owner, a due date or trigger, and a failsafe the practice controls and will actually run. A patient can
 own an action (returning a kit, having blood drawn); the failsafe belongs to the
 practice. Document only the failsafes your systems or staff carry out.
 
@@ -72,13 +72,15 @@ Results pending at signing: {none / [___]} -> tracked by {results inbox / nurse 
 Next contact: {office / telehealth / portal / phone} on [date] {or result-triggered}
 ```
 
-Keep the "Results pending at signing" line even when the answer is none.
+Keep the "Results pending at signing" line even when the answer is none, so that the next
+reader can see the question was asked.
 
 ## 4. Weighted variants
 
-The 5 lines stay the same; the load-bearing lines shift with the visit. The ACCEPT tag on each problem is optional and only records which goal the problem came from.
+The 5 lines stay the same, but the lines that need the most detail change with the type
+of visit. The ACCEPT tag on each problem is optional and only records which goal the problem came from.
 
-### `.CLOSEACUTE` : acute problem (S and E carry the weight)
+### `.CLOSEACUTE` : acute problem (most detail in S and E)
 
 ```
 A/P [acute problem] [ACCEPT: C acute]
@@ -89,7 +91,7 @@ S  return sooner if [named warning signs] within [time frame]; not improving by 
 E  recheck {as needed / [date]} via {portal / phone / office}; failsafe: [___]
 ```
 
-### `.CLOSECHRONIC` : chronic condition (C and L carry the weight)
+### `.CLOSECHRONIC` : chronic condition (most detail in C and L)
 
 ```
 A/P [condition] [ACCEPT: C chronic]
@@ -102,14 +104,14 @@ E  follow-up {[interval] / [date]} booked before leaving; failsafe if lab not do
 
 ### Other visit types
 
-- **Adult preventive:** weight O (screening chosen from named options) and L (result
-  tracked to closure). The endpoint is usually result-triggered. A positive screening
+- Adult preventive visits: put most detail in O (screening chosen from named options)
+  and L (result tracked to closure). The endpoint is usually result-triggered. A positive screening
   result opens a new loop (for example, a diagnostic referral) with its own owner.
-- **Well-child:** weight E (next immunization or milestone) and S (parent-facing
-  warning signs). The owner of the next-due loop is often the parent; the failsafe is
+- Well-child visits: put most detail in E (next immunization or milestone) and S
+  (warning signs for the parent). The owner of the next-due loop is often the parent; the failsafe is
   still the practice's.
-- **Adolescent:** weight L (a confidential follow-up channel) and O (confidential
-  shared decision). Record the consent basis in O.
+- Adolescent visits: put most detail in L (a confidential follow-up channel) and O
+  (a confidential shared decision). Record the consent basis in O.
 
 ## Coding notes
 
